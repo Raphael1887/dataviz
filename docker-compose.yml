@@ -1,0 +1,29 @@
+services:
+  # Service 1 : La Base de données
+  db:
+    image: postgres:15
+    restart: always
+    environment:
+      POSTGRES_USER: user_olympic
+      POSTGRES_PASSWORD: password_olympic
+      POSTGRES_DB: olympic_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  # Service 2 : Votre Application Dash
+  web:
+    build: .
+    command: /bin/bash entrypoint.sh
+    ports:
+      - "8050:8050"
+    volumes:
+      - .:/app
+    depends_on:
+      - db
+    environment:
+      - DATABASE_URL=postgresql://user_olympic:password_olympic@db:5432/olympic_db
+
+volumes:
+  postgres_data:
